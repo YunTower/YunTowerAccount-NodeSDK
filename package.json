@@ -1,0 +1,11 @@
+{
+  "name": "yuntower-account-node-sdk",
+  "description": "YunTower Account",
+  "version": "0.0.1",
+  "private": false,
+  "author": "fish",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/node": "^22.5.5"
+  }
+}
