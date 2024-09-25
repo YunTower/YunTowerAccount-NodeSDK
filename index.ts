@@ -1,4 +1,4 @@
-export class YunTowerAccountSDK {
+class YunTowerAccountSDK {
   config: {
     auth: string,
     api: string,
