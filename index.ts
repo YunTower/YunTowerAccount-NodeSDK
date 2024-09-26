@@ -40,13 +40,6 @@ class YunTowerAccountSDK {
       state,
     };
   }
-
-  // 判断是否是电脑
-  isPC(): boolean {
-    const userAgent = navigator.userAgent.toLowerCase();
-    return /windows|macintosh|linux/.test(userAgent);
-  }
-
   /**
    * fetch
    * @param {string} url - 请求URL
@@ -149,9 +142,12 @@ class YunTowerAccountSDK {
 
   /**
    * 退出登录状态
+   * @param {string} access_token 用户访问凭证
    */
-  async logout(): Promise<{ code: number, msg: string, data: any }> {
-    const res = await this.fetch(`${this.config.api}/user/logout`, "POST");
+  async logout(access_token: string): Promise<{ code: number, msg: string, data: any }> {
+    const res = await this.fetch(`${this.config.api}/user/logout`, "POST", {}, {
+      Authorization: `Bearer ${access_token}`
+    });
     return res;
   }
 }

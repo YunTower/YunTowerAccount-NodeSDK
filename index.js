@@ -68,11 +68,6 @@ var YunTowerAccountSDK = /** @class */ (function () {
             state: state,
         };
     }
-    // 判断是否是电脑
-    YunTowerAccountSDK.prototype.isPC = function () {
-        var userAgent = navigator.userAgent.toLowerCase();
-        return /windows|macintosh|linux/.test(userAgent);
-    };
     /**
      * fetch
      * @param {string} url - 请求URL
@@ -204,13 +199,16 @@ var YunTowerAccountSDK = /** @class */ (function () {
     };
     /**
      * 退出登录状态
+     * @param {string} access_token 用户访问凭证
      */
-    YunTowerAccountSDK.prototype.logout = function () {
+    YunTowerAccountSDK.prototype.logout = function (access_token) {
         return __awaiter(this, void 0, void 0, function () {
             var res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.fetch("".concat(this.config.api, "/user/logout"), "POST")];
+                    case 0: return [4 /*yield*/, this.fetch("".concat(this.config.api, "/user/logout"), "POST", {}, {
+                            Authorization: "Bearer ".concat(access_token)
+                        })];
                     case 1:
                         res = _a.sent();
                         return [2 /*return*/, res];
