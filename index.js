@@ -201,12 +201,17 @@ var YunTowerAccountSDK = /** @class */ (function () {
      * 退出登录状态
      * @param {string} access_token 用户访问凭证
      */
-    YunTowerAccountSDK.prototype.logout = function (access_token) {
-        return __awaiter(this, void 0, void 0, function () {
+    YunTowerAccountSDK.prototype.logout = function (access_token_1) {
+        return __awaiter(this, arguments, void 0, function (access_token, appid, appsecret) {
             var res;
+            if (appid === void 0) { appid = this.config.appid; }
+            if (appsecret === void 0) { appsecret = this.config.appsecret; }
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.fetch("".concat(this.config.api, "/user/logout"), "POST", {}, {
+                    case 0: return [4 /*yield*/, this.fetch("".concat(this.config.api, "/user/logout"), "POST", {
+                            appid: appid,
+                            appsecret: appsecret
+                        }, {
                             Authorization: "Bearer ".concat(access_token)
                         })];
                     case 1:

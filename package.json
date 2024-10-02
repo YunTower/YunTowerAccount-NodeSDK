@@ -1,7 +1,7 @@
 {
   "name": "yuntower-account-node-sdk",
   "description": "YunTower Account Node SDK",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "private": false,
   "author": "fish",
   "license": "Apache-2.0",

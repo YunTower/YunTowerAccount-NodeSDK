@@ -144,8 +144,11 @@ class YunTowerAccountSDK {
    * 退出登录状态
    * @param {string} access_token 用户访问凭证
    */
-  async logout(access_token: string): Promise<{ code: number, msg: string, data: any }> {
-    const res = await this.fetch(`${this.config.api}/user/logout`, "POST", {}, {
+  async logout(access_token: string, appid: string = this.config.appid, appsecret: string = this.config.appsecret): Promise<{ code: number, msg: string, data: any }> {
+    const res = await this.fetch(`${this.config.api}/user/logout`, "POST", {
+      appid,
+      appsecret
+    }, {
       Authorization: `Bearer ${access_token}`
     });
     return res;
