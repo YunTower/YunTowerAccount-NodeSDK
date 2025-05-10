@@ -1,9 +1,9 @@
 {
-  "name": "yuntower-account-node-sdk",
+  "name": "@yuntower/yuntower-account-node-sdk",
   "description": "YunTower Account Node SDK",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "private": false,
-  "author": "fish",
+  "author": "yuntower",
   "license": "Apache-2.0",
   "devDependencies": {
     "@types/node": "^22.5.5"
@@ -14,5 +14,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

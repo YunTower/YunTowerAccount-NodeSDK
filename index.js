@@ -20,8 +20,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -61,7 +61,7 @@ var YunTowerAccountSDK = /** @class */ (function () {
             api: 'https://v1.api.account.yuntower.cn/open/v1',
             // auth:'http://localhost:3000',
             // api:'http://127.0.0.1:8787',
-            origin_white_list: ['account.yuntower.cn', 'localhost:3000'],
+            origin_white_list: ['account.yuntower.cn', 'account.yuntower.com', 'localhost:3000'],
             appid: appid,
             appsecret: appsecret,
             scope: scope,
