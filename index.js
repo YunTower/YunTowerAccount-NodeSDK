@@ -57,8 +57,8 @@ var YunTowerAccountSDK = /** @class */ (function () {
             console.error('[YunTowerAccountSDK] scope参数错误，目前只支持[user_profile]');
         }
         this.config = {
-            auth: 'https://account.yuntower.cn',
-            api: 'https://v1.api.account.yuntower.cn/open/v1',
+            auth: 'https://account.yuntower.com',
+            api: 'https://v1.api.account.yuntower.cn',
             // auth:'http://localhost:3000',
             // api:'http://127.0.0.1:8787',
             origin_white_list: ['account.yuntower.cn', 'account.yuntower.com', 'localhost:3000'],
