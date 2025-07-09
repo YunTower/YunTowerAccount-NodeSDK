@@ -4,9 +4,9 @@
 
 Apache License 2.0   
 
-- 官网：[https://account.yuntower.com](https://account.yuntower.cn)   
-- 文档：[https://account.yuntower.com/docs](https://account.yuntower.cn/docs)
-- NPM：[https://www.npmjs.com/package/@yuntower/yuntower-account-node-sdk](https://www.npmjs.com/package/yuntower-account-node-sdk)
+- 官网：[https://account.yuntower.com](https://account.yuntower.com)   
+- 文档：[https://account.yuntower.com/docs](https://account.yuntower.com/docs)
+- NPM：[https://www.npmjs.com/package/@yuntower/yuntower-account-node-sdk](https://www.npmjs.com/package/@yuntower/yuntower-account-node-sdk)
 
 
 ```
@@ -14,7 +14,7 @@ Apache License 2.0
 npm i yuntower-account-node-sdk
 
 // For versions >= 0.0.9
-npm i yuntower/yuntower-account-node-sdk   
+npm i @yuntower/yuntower-account-node-sdk   
 ```
 
 Provide by YunTower

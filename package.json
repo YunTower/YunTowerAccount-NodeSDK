@@ -1,13 +1,10 @@
 {
   "name": "@yuntower/yuntower-account-node-sdk",
   "description": "YunTower Account Node SDK",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "private": false,
   "author": "yuntower",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "@types/node": "^22.5.5"
-  },
   "main": "index.js",
   "dependencies": {
     "undici-types": "^6.19.8"
