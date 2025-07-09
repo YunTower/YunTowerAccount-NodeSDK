@@ -1,11 +1,23 @@
 {
   "name": "@yuntower/yuntower-account-node-sdk",
   "description": "YunTower Account Node SDK",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "private": false,
   "author": "yuntower",
   "license": "Apache-2.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "undici-types": "^6.19.8"
   },
