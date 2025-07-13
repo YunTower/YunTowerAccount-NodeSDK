@@ -121,5 +121,21 @@ class YunTowerAccountSDK {
         });
         return res;
     }
+    /**
+     * 获取用户第三方账号信息
+     * @param {string} access_token 用户访问凭证
+     * @param {string} appid 应用ID
+     * @param {string} appsecret 应用密钥
+     * @returns
+     */
+    async getThirdPartyAccount(access_token, appid = this.config.appid, appsecret = this.config.appsecret) {
+        const res = await this.fetch(`${this.config.api}/user/thirdparty`, "POST", {
+            appid,
+            appsecret
+        }, {
+            Authorization: `Bearer ${access_token}`
+        });
+        return res;
+    }
 }
 export default YunTowerAccountSDK;

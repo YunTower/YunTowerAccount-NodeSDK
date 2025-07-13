@@ -57,5 +57,13 @@ declare class YunTowerAccountSDK {
         msg: string;
         data: any;
     }>;
+    /**
+     * 获取用户第三方账号信息
+     * @param {string} access_token 用户访问凭证
+     * @param {string} appid 应用ID
+     * @param {string} appsecret 应用密钥
+     * @returns
+     */
+    getThirdPartyAccount(access_token: string, appid?: string, appsecret?: string): Promise<any>;
 }
 export default YunTowerAccountSDK;
