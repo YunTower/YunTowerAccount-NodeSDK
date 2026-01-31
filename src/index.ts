@@ -6,26 +6,14 @@ class YunTowerAccountSDK {
     appsecret: string;
   };
 
-  constructor({
-    appid,
-    appsecret,
-  }: {
-    appid: string;
-    appsecret: string;
-  }) {
+  constructor(appid: string, appsecret: string) {
     if (!appid || !appsecret) {
       console.error("[YunTowerAccountSDK] 参数缺失");
     }
 
     this.config = {
-      api: "https://v1.api.account.yuntower.cn",
-      // auth:'http://localhost:3000',
-      // api:'http://127.0.0.1:8787',
-      origin_white_list: [
-        "account.yuntower.cn",
-        "account.yuntower.com",
-        "localhost:3000",
-      ],
+      api: "https://v1.api.account.yuntower.com",
+      origin_white_list: ["account.yuntower.cn", "account.yuntower.com"],
       appid,
       appsecret,
     };
@@ -43,7 +31,7 @@ class YunTowerAccountSDK {
     url: string,
     method: "GET" | "POST",
     data: object = {},
-    headers: object = {}
+    headers: object = {},
   ): Promise<any> {
     try {
       // 设置默认请求头
@@ -124,7 +112,7 @@ class YunTowerAccountSDK {
         appid: this.config.appid,
         appsecret: this.config.appsecret,
         refresh_token,
-      }
+      },
     );
 
     return res;
