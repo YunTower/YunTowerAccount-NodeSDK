@@ -6,6 +6,13 @@ class YunTowerAccountSDK {
     appsecret: string;
   };
 
+  /** access_token 最大有效期 12 天（秒） */
+  private static readonly ACCESS_TOKEN_MAX_EXPIRE = 12 * 24 * 3600;
+  /** refresh_token 最大有效期 24 天（秒） */
+  private static readonly REFRESH_TOKEN_MAX_EXPIRE = 24 * 24 * 3600;
+  /** 头像文件最大 15MB */
+  private static readonly AVATAR_MAX_SIZE = 15 * 1024 * 1024;
+
   constructor(appid: string, appsecret: string) {
     if (!appid || !appsecret) {
       console.error("[YunTowerAccountSDK] 参数缺失");
@@ -71,16 +78,55 @@ class YunTowerAccountSDK {
 
   /**
    * 获取用户访问凭证
-   * @param {string} code 授权码
-   * @returns
+   * @param code 授权码
+   * @param options 可选：accessTokenExpiresIn、refreshTokenExpiresIn（单位秒，最大分别为 12 天、24 天）
    */
-  async getUserToken(code: string): Promise<any> {
-    const res = await this.fetch(`${this.config.api}/user/token/get`, "POST", {
+  async getUserToken(
+    code: string,
+    options?: {
+      accessTokenExpiresIn?: number;
+      refreshTokenExpiresIn?: number;
+    },
+  ): Promise<any> {
+    if (
+      options?.accessTokenExpiresIn != null &&
+      options.accessTokenExpiresIn > YunTowerAccountSDK.ACCESS_TOKEN_MAX_EXPIRE
+    ) {
+      throw new Error(
+        `access_token 有效期不能超过 ${YunTowerAccountSDK.ACCESS_TOKEN_MAX_EXPIRE} 秒（12 天）`,
+      );
+    }
+    if (
+      options?.refreshTokenExpiresIn != null &&
+      options.refreshTokenExpiresIn >
+        YunTowerAccountSDK.REFRESH_TOKEN_MAX_EXPIRE
+    ) {
+      throw new Error(
+        `refresh_token 有效期不能超过 ${YunTowerAccountSDK.REFRESH_TOKEN_MAX_EXPIRE} 秒（24 天）`,
+      );
+    }
+    const data: Record<string, string | number> = {
       appid: this.config.appid,
       appsecret: this.config.appsecret,
       code,
-    });
-
+    };
+    if (
+      options?.accessTokenExpiresIn != null &&
+      options.accessTokenExpiresIn > 0
+    ) {
+      data.access_token_expires_in = options.accessTokenExpiresIn;
+    }
+    if (
+      options?.refreshTokenExpiresIn != null &&
+      options.refreshTokenExpiresIn > 0
+    ) {
+      data.refresh_token_expires_in = options.refreshTokenExpiresIn;
+    }
+    const res = await this.fetch(
+      `${this.config.api}/user/token/get`,
+      "POST",
+      data,
+    );
     return res;
   }
 
@@ -148,6 +194,78 @@ class YunTowerAccountSDK {
     });
 
     return res;
+  }
+
+  /**
+   * 设置用户昵称（1-64 字符）
+   */
+  async setUserNickname(access_token: string, nickname: string): Promise<any> {
+    const len = [...nickname].length;
+    if (len < 1 || len > 64) {
+      throw new Error(`昵称长度须为 1-64 个字符，当前为 ${len} 个字符`);
+    }
+    const res = await this.fetch(`${this.config.api}/user/nickname`, "POST", {
+      appid: this.config.appid,
+      appsecret: this.config.appsecret,
+      access_token,
+      nickname,
+    });
+    return res;
+  }
+
+  /**
+   * 设置用户头像
+   * @param access_token 用户访问凭证
+   * @param image 图片：Buffer、Blob 或本地文件路径（Node 下会读文件），≤15MB
+   */
+  async setUserAvatar(
+    access_token: string,
+    image: Buffer | Blob | string,
+  ): Promise<any> {
+    let blob: Blob;
+    let filename = "avatar.jpg";
+    if (typeof image === "string") {
+      const fs = await import("fs/promises");
+      const path = await import("path");
+      const buf = await fs.readFile(image);
+      if (buf.length > YunTowerAccountSDK.AVATAR_MAX_SIZE) {
+        throw new Error(
+          `头像文件不能超过 15MB，当前为 ${(buf.length / 1024 / 1024).toFixed(2)}MB`,
+        );
+      }
+      blob = new Blob([new Uint8Array(buf)]);
+      filename = path.basename(image) || filename;
+    } else if (Buffer.isBuffer(image)) {
+      if (image.length > YunTowerAccountSDK.AVATAR_MAX_SIZE) {
+        throw new Error(
+          `头像文件不能超过 15MB，当前为 ${(image.length / 1024 / 1024).toFixed(2)}MB`,
+        );
+      }
+      blob = new Blob([new Uint8Array(image)]);
+    } else {
+      if (image.size > YunTowerAccountSDK.AVATAR_MAX_SIZE) {
+        throw new Error(
+          `头像文件不能超过 15MB，当前为 ${(image.size / 1024 / 1024).toFixed(2)}MB`,
+        );
+      }
+      blob = image;
+    }
+    const form = new FormData();
+    form.append("appid", this.config.appid);
+    form.append("appsecret", this.config.appsecret);
+    form.append("access_token", access_token);
+    form.append("file", blob, filename);
+    const url = `${this.config.api}/user/avatar`;
+    const response = await fetch(url, {
+      method: "POST",
+      body: form,
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const responseBody = await response.json();
+    console.log("[YunTowerAccountSDK]: ", responseBody);
+    return responseBody;
   }
 }
 
