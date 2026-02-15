@@ -60,14 +60,27 @@ class YunTowerAccountSDK {
 
       // 发起请求
       const response = await fetch(url, options);
+      const rawBody = await response.text();
 
       // 检查响应状态
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        let responseBody: unknown;
+        try {
+          responseBody = rawBody ? JSON.parse(rawBody) : null;
+        } catch {
+          responseBody = rawBody;
+        }
+        const err = new Error(`HTTP error! Status: ${response.status}`) as Error & {
+          status: number;
+          responseBody: unknown;
+        };
+        err.status = response.status;
+        err.responseBody = responseBody;
+        throw err;
       }
 
       // 解析响应体
-      const responseBody = await response.json();
+      const responseBody = rawBody ? JSON.parse(rawBody) : null;
       console.log("[YunTowerAccountSDK]: ", responseBody);
       return responseBody;
     } catch (error) {
