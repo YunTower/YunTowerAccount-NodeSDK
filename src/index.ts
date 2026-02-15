@@ -1,3 +1,78 @@
+export interface ApiResponseBody {
+  code?: number;
+  msg?: string;
+  data?: unknown;
+}
+
+export class YunTowerAccountSDKError extends Error {
+  /** HTTP 状态码 */
+  readonly status: number;
+  /** 接口返回的完整 body */
+  readonly responseBody: ApiResponseBody | string | null;
+  /** 接口返回的 code */
+  readonly apiCode?: number;
+  /** 接口返回的 msg */
+  readonly apiMsg?: string;
+
+  constructor(
+    message: string,
+    status: number,
+    responseBody: ApiResponseBody | string | null,
+  ) {
+    super(message);
+    this.name = "YunTowerAccountSDKError";
+    this.status = status;
+    this.responseBody = responseBody;
+    if (responseBody && typeof responseBody === "object" && "code" in responseBody) {
+      this.apiCode = responseBody.code;
+    }
+    if (responseBody && typeof responseBody === "object" && "msg" in responseBody) {
+      this.apiMsg = responseBody.msg;
+    }
+    Object.setPrototypeOf(this, YunTowerAccountSDKError.prototype);
+  }
+
+  static format(err: unknown): string {
+    if (err instanceof YunTowerAccountSDKError) {
+      const parts = [
+        `[YunTowerAccountSDKError] ${err.message}`,
+        `HTTP Status: ${err.status}`,
+      ];
+      if (err.apiMsg != null) parts.push(`API Msg: ${err.apiMsg}`);
+      if (err.apiCode != null) parts.push(`API Code: ${err.apiCode}`);
+      if (err.responseBody != null) {
+        parts.push(
+          "Response: " +
+            (typeof err.responseBody === "string"
+              ? err.responseBody
+              : JSON.stringify(err.responseBody, null, 2)),
+        );
+      }
+      return parts.join("\n");
+    }
+    if (err instanceof Error) return err.message;
+    return String(err);
+  }
+}
+
+function parseResponseBody(raw: string): ApiResponseBody | string | null {
+  if (!raw.trim()) return null;
+  try {
+    return JSON.parse(raw) as ApiResponseBody;
+  } catch {
+    return raw;
+  }
+}
+
+function createApiError(status: number, rawBody: string): YunTowerAccountSDKError {
+  const responseBody = parseResponseBody(rawBody);
+  const msg =
+    responseBody && typeof responseBody === "object" && responseBody.msg
+      ? responseBody.msg
+      : `HTTP error! Status: ${status}`;
+  return new YunTowerAccountSDKError(msg, status, responseBody);
+}
+
 class YunTowerAccountSDK {
   config: {
     api: string;
@@ -27,12 +102,7 @@ class YunTowerAccountSDK {
   }
 
   /**
-   * fetch
-   * @param {string} url - 请求URL
-   * @param {string} method - 请求方法 (GET | POST)
-   * @param {Object} [data] - POST请求时的数据
-   * @param {Object} [headers] - 自定义请求头
-   * @returns {Promise<any>} - 解析后的响应体
+   * 统一请求：非 2xx 时抛出 YunTowerAccountSDKError（含 status、responseBody、apiCode、apiMsg）
    */
   async fetch(
     url: string,
@@ -40,53 +110,26 @@ class YunTowerAccountSDK {
     data: object = {},
     headers: object = {},
   ): Promise<any> {
-    try {
-      // 设置默认请求头
-      const defaultHeaders = {
-        "Content-Type": "application/json",
-        ...headers,
-      };
-
-      // 构建fetch选项
-      const options: RequestInit = {
-        method,
-        headers: defaultHeaders,
-      };
-
-      // 如果是POST请求，需要设置body
-      if (method.toUpperCase() === "POST") {
-        options.body = JSON.stringify(data);
-      }
-
-      // 发起请求
-      const response = await fetch(url, options);
-      const rawBody = await response.text();
-
-      // 检查响应状态
-      if (!response.ok) {
-        let responseBody: unknown;
-        try {
-          responseBody = rawBody ? JSON.parse(rawBody) : null;
-        } catch {
-          responseBody = rawBody;
-        }
-        const err = new Error(`HTTP error! Status: ${response.status}`) as Error & {
-          status: number;
-          responseBody: unknown;
-        };
-        err.status = response.status;
-        err.responseBody = responseBody;
-        throw err;
-      }
-
-      // 解析响应体
-      const responseBody = rawBody ? JSON.parse(rawBody) : null;
-      console.log("[YunTowerAccountSDK]: ", responseBody);
-      return responseBody;
-    } catch (error) {
-      console.error("Fetch error:", error);
-      throw error;
+    const defaultHeaders: Record<string, string> = {
+      "Content-Type": "application/json",
+      ...(headers as Record<string, string>),
+    };
+    const options: RequestInit = {
+      method,
+      headers: defaultHeaders,
+    };
+    if (method.toUpperCase() === "POST") {
+      options.body = JSON.stringify(data);
     }
+
+    const response = await fetch(url, options);
+    const rawBody = await response.text();
+
+    if (!response.ok) {
+      throw createApiError(response.status, rawBody);
+    }
+
+    return rawBody ? (parseResponseBody(rawBody) as ApiResponseBody) : null;
   }
 
   /**
@@ -273,12 +316,12 @@ class YunTowerAccountSDK {
       method: "POST",
       body: form,
     });
+    const rawBody = await response.text();
     if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+      throw createApiError(response.status, rawBody);
     }
-    const responseBody = await response.json();
-    console.log("[YunTowerAccountSDK]: ", responseBody);
-    return responseBody;
+    const body = parseResponseBody(rawBody);
+    return body ?? null;
   }
 }
 
