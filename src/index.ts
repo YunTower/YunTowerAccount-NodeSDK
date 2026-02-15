@@ -32,17 +32,15 @@ export class YunTowerAccountSDKError extends Error {
     Object.setPrototypeOf(this, YunTowerAccountSDKError.prototype);
   }
 
+  /** 格式化为可读字符串，便于日志或控制台输出 */
   static format(err: unknown): string {
     if (err instanceof YunTowerAccountSDKError) {
       const parts = [
-        `[YunTowerAccountSDKError] ${err.message}`,
-        `HTTP Status: ${err.status}`,
+        `[YunTowerAccountSDK] ERROR ${err.message}`,
       ];
-      if (err.apiMsg != null) parts.push(`API Msg: ${err.apiMsg}`);
-      if (err.apiCode != null) parts.push(`API Code: ${err.apiCode}`);
       if (err.responseBody != null) {
         parts.push(
-          "Response: " +
+          "[YunTowerAccountSDK] Response " +
             (typeof err.responseBody === "string"
               ? err.responseBody
               : JSON.stringify(err.responseBody, null, 2)),
